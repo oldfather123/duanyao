@@ -1,6 +1,6 @@
 CC = g++
 CFLAGS = -std=c++17 -O2 -Wall
-SRC = duanyao.cpp
+SRC = duanyao.cpp tiles.cpp yifan.cpp
 OUT = duanyao
 
 .PHONY: all run clean
@@ -8,7 +8,7 @@ OUT = duanyao
 all: $(OUT)
 
 $(OUT): $(SRC)
-	$(CC) $(CFLAGS) -o $@ $<
+	$(CC) $(CFLAGS) -o $@ $^
 
 run: $(OUT)
 	@./$(OUT)
