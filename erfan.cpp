@@ -208,7 +208,8 @@ bool hunquan(const Tiles &tile) {
         mpscnt++;
     }
     for (const auto &d : tile.dazi) {
-        if (!is_yaojiu(d.substr(0, 2)) && !is_yaojiu(d.substr(2, 2)))
+        string s = addhupai(d);
+        if (!is_yaojiu(s.substr(0, 2)) && !is_yaojiu(s.substr(4, 2)))
             return false;
         mpscnt++;
     }

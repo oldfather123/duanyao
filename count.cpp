@@ -9,8 +9,50 @@
 void count_fanshu(Tiles &cur){
     if (wlizhi) {
         lizhi = true;
+        fulu = false;
         cur.yizhong.push_back({"两立直", 2});
         cur.fanshu += 2;
+    }
+    if (lizhi && !wlizhi) {
+        fulu = false;
+        cur.yizhong.push_back({"立直", 1});
+        cur.fanshu += 1;
+    }
+    if (qingyise(cur)) {
+        if (fulu) {
+            cur.yizhong.push_back({"清一色", 5});
+            cur.fanshu += 5;
+        }
+        else {
+            cur.yizhong.push_back({"清一色", 6});
+            cur.fanshu += 6;
+        }
+    }
+    bool ebk = false;
+    if (!fulu && erbeikou(cur)) {
+        cur.yizhong.push_back({"二杯口", 3});
+        cur.fanshu += 3;
+        ebk = true;
+    }
+    if (chunquan(cur)) {
+        if (fulu) {
+            cur.yizhong.push_back({"纯全带幺九", 2});
+            cur.fanshu += 2;
+        }
+        else {
+            cur.yizhong.push_back({"纯全带幺九", 3});
+            cur.fanshu += 3;
+        }
+    }
+    if (hunyise(cur)) {
+        if (fulu) {
+            cur.yizhong.push_back({"混一色", 2});
+            cur.fanshu += 2;
+        }
+        else {
+            cur.yizhong.push_back({"混一色", 3});
+            cur.fanshu += 3;
+        }
     }
     if (sansetongke(cur)) {
         cur.yizhong.push_back({"三色同刻", 2});
@@ -38,7 +80,7 @@ void count_fanshu(Tiles &cur){
         cur.yizhong.push_back({"混老头", 2});
         cur.fanshu += 2;
     }
-    if (qiduizi(cur) && !fulu) {
+    if (!fulu && qiduizi(cur)) {
         cur.yizhong.push_back({"七对子", 2});
         cur.fanshu += 2;
     }
@@ -76,11 +118,11 @@ void count_fanshu(Tiles &cur){
         cur.yizhong.push_back({"断幺九", 1});
         cur.fanshu += 1;
     }
-    if (pinghu(cur) && !fulu) {
+    if (!fulu && pinghu(cur)) {
         cur.yizhong.push_back({"平和", 1});
         cur.fanshu += 1;
     }
-    if (yibeikou(cur) && !fulu) {
+    if (!fulu && !ebk && yibeikou(cur)) {
         cur.yizhong.push_back({"一杯口", 1});
         cur.fanshu += 1;
     }
@@ -92,20 +134,16 @@ void count_fanshu(Tiles &cur){
         cur.yizhong.push_back({"役牌：自风牌", 1});
         cur.fanshu += 1;
     }
-    if (bai(cur) && !xsy) {
+    if (!xsy && bai(cur)) {
         cur.yizhong.push_back({"役牌：白", 1});
         cur.fanshu += 1;
     }
-    if (fa(cur) && !xsy) {
+    if (!xsy && fa(cur)) {
         cur.yizhong.push_back({"役牌：发", 1});
         cur.fanshu += 1;
     }
-    if (zhong(cur) && !xsy) {
+    if (!xsy && zhong(cur)) {
         cur.yizhong.push_back({"役牌：中", 1});
-        cur.fanshu += 1;
-    }
-    if (lizhi && !wlizhi) {
-        cur.yizhong.push_back({"立直", 1});
         cur.fanshu += 1;
     }
     if (zimo && !fulu) {

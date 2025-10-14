@@ -65,7 +65,13 @@ bool xiaosanyuan(const Tiles &tile);
 bool hunlaotou(const Tiles &tile);
 bool qiduizi(const Tiles &tile);
 bool hunquan(const Tiles &tile);
+string addhupai(const string &s);
 bool yiqi(const Tiles &tile);
 bool sansetongshun(const Tiles &tile);
+
+bool erbeikou(const Tiles &tile);
+bool chunquan(const Tiles &tile);
+bool hunyise(const Tiles &tile);
+bool qingyise(const Tiles &tile);
 
 void count_fanshu(Tiles &cur);
