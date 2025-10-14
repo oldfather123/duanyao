@@ -7,29 +7,33 @@
 #include"defs.hpp"
 using namespace std;
 
+bool is_yaojiu(const string &t) {
+    if (t.size() != 2) 
+        return false;
+    if (t[1] == 'z') 
+        return true;
+    return t[0] == '1' || t[0] == '9';
+}
+
 bool duanyaojiu(const Tiles& tile) {
-    auto is_yaojiu = [](const string &t) -> bool {
-        if (t.size() != 2) 
-            return false;
-        if (t[1] == 'z') 
-            return true;
-        return t[0] == '1' || t[0] == '9';
-    };
     for (const auto &k : tile.kezi) {
-        if (is_yaojiu(k.substr(0, 2))) return false;
+        if (is_yaojiu(k.substr(0, 2))) 
+            return false;
     }
     for (const auto &s : tile.shunzi) {
-        if (is_yaojiu(s.substr(0, 2)) && is_yaojiu(s.substr(2, 2)) && is_yaojiu(s.substr(4, 2)))
+        if (is_yaojiu(s.substr(0, 2)) || is_yaojiu(s.substr(4, 2)))
             return false;
     }
     for (const auto &g : tile.gangzi) {
-        if (is_yaojiu(g.substr(0, 2))) return false;
+        if (is_yaojiu(g.substr(0, 2))) 
+            return false;
     }
     for (const auto &d : tile.duizi) {
-        if (is_yaojiu(d.substr(0, 2))) return false;
+        if (is_yaojiu(d.substr(0, 2))) 
+            return false;
     }
     for (const auto &d : tile.dazi) {
-        if (is_yaojiu(d.substr(0, 2)) && is_yaojiu(d.substr(2, 2)))
+        if (is_yaojiu(d.substr(0, 2)) || is_yaojiu(d.substr(2, 2)))
             return false;
     }
     for (const auto &d : tile.danpai) {

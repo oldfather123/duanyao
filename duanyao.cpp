@@ -22,6 +22,8 @@ bool lingshang;
 bool haidi;
 bool hedi;
 
+FTiles ftile;
+
 int main() {
     string input;
     cout << "输入手牌" << endl;
@@ -64,7 +66,6 @@ int main() {
         cout << "无法识别的牌型" << endl;
         return 0;
     }
-    count_tiles(results);
     for (int i = 0; i < results.size(); i++) {
         const Tiles &t = results[i];
         cout << "牌型 " << (i + 1) << ":" << endl;
@@ -104,15 +105,62 @@ int main() {
                 cout << d << " ";
             cout << endl;
         }
-        if (!t.yizhong.empty()) {
-            cout << "  役种: " << endl;
-            for (const auto &d : t.yizhong) {
-                cout << "\t" << d.first << " " << d.second << "番" << endl;
+    }
+    cout << "选择牌型" << endl;
+    int choice;
+    cin >> choice;
+    Tiles tile = results[choice - 1];
+    if (fulu) {
+        cout << "选择副露牌" << endl;
+        if (!tile.gangzi.empty()) {
+            cout << "  杠子: ";
+            for (const auto &g : tile.gangzi) 
+                cout << g << " ";
+            cout << endl;
+            string tags;
+            cin >> tags;
+            if (tags[0] != '0'){
+                for (int i = 0; i < tags.length(); i++) {
+                    ftile.gangzi.push_back(tile.gangzi[tags[i] - '1']);
+                }
             }
         }
-        if (t.yizhong.empty()) {
-            cout << "  役种: 无" << endl;
+        if (!tile.kezi.empty()) {
+            cout << "  刻子: ";
+            for (const auto &k : tile.kezi) 
+                cout << k << " ";
+            cout << endl;
+            string tags;
+            cin >> tags;
+            if (tags[0] != '0'){
+                for (int i = 0; i < tags.length(); i++) {
+                    ftile.kezi.push_back(tile.kezi[tags[i] - '1']);
+                }
+            }
         }
+        if (!tile.shunzi.empty()) {
+            cout << "  顺子: ";
+            for (const auto &s : tile.shunzi) 
+                cout << s << " ";
+            cout << endl;
+            string tags;
+            cin >> tags;
+            if (tags[0] != '0'){
+                for (int i = 0; i < tags.length(); i++) {
+                    ftile.shunzi.push_back(tile.shunzi[tags[i] - '1']);
+                }
+            }
+        }
+    }
+    count_fanshu(tile);
+    if (!tile.yizhong.empty()) {
+        cout << "  役种: " << endl;
+        for (const auto &d : tile.yizhong) {
+            cout << "\t" << d.first << " " << d.second << "番" << endl;      
+        }
+    }
+    if (tile.yizhong.empty()) {
+        cout << "  役种: 无" << endl;
     }
     return 0;
 }

@@ -1,6 +1,6 @@
 CC = g++
 CFLAGS = -std=c++17 -O2 -Wall
-SRC = duanyao.cpp tiles.cpp yifan.cpp
+SRC = duanyao.cpp tiles.cpp yifan.cpp erfan.cpp count.cpp
 OUT = duanyao
 
 .PHONY: all run clean
