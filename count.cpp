@@ -6,6 +6,9 @@
 #include<functional>
 #include"defs.hpp"
 
+bool ph = false;
+bool qd = false;
+
 string getdora(const string &dora) {
     char next;
     if (dora[1] == 'z') {
@@ -25,7 +28,7 @@ string getdora(const string &dora) {
     return string{next, dora[1]};
 }
 
-void count_fanshu(Tiles &cur){
+void count_fanshu(Tiles &cur) {
     if (wlizhi) {
         lizhi = true;
         fulu = false;
@@ -102,6 +105,7 @@ void count_fanshu(Tiles &cur){
     if (!fulu && qiduizi(cur)) {
         cur.yizhong.push_back({"七对子", 2});
         cur.fanshu += 2;
+        qd = true;
     }
     if (hunquan(cur)) {
         if (fulu) {
@@ -140,6 +144,7 @@ void count_fanshu(Tiles &cur){
     if (!fulu && pinghu(cur)) {
         cur.yizhong.push_back({"平和", 1});
         cur.fanshu += 1;
+        ph = true;
     }
     if (!fulu && !ebk && yibeikou(cur)) {
         cur.yizhong.push_back({"一杯口", 1});
@@ -201,4 +206,76 @@ void count_fanshu(Tiles &cur){
         cur.yizhong.push_back({"里宝牌", ldoracnt});
         cur.fanshu += ldoracnt;
     }
+}
+
+void count_fushu(Tiles &cur) {
+    if (ph && zimo && !fulu) {
+        cur.fushu = 20;
+        return;
+    }
+    if (qd) {
+        cur.fushu = 25;
+        return;
+    }
+    for (const auto &k : cur.kezi) {
+        bool m = false, yj = false;
+        int f = 0;
+        if (count(ftile.kezi.begin(), ftile.kezi.end(), k) > 0)
+            m = true;
+        if (is_yaojiu(k.substr(0, 2)))
+            yj = true;
+        if (m) {
+            if (yj)
+                f = 4;
+            else
+                f = 2;
+        }
+        else {
+            if (yj)
+                f = 8;
+            else
+                f = 4;
+        }
+        cur.fushu += f;
+    }
+    for (const auto &g : cur.gangzi) {
+        bool m = false, yj = false;
+        int f = 0;
+        if (count(ftile.gangzi.begin(), ftile.gangzi.end(), g) > 0)
+            m = true;
+        if (is_yaojiu(g.substr(0, 2)))
+            yj = true;
+        if (m) {
+            if (yj)
+                f = 16;
+            else
+                f = 8;
+        }
+        else {
+            if (yj)
+                f = 32;
+            else
+                f = 16;
+        }
+        cur.fushu += f;
+    }
+    for (const auto &d : cur.duizi) {
+        if (d.substr(0, 2) == zifeng && d.substr(0, 2) == changfeng)
+            cur.fushu += 4;
+        if (d.substr(0, 2) == zifeng && d.substr(0, 2) != changfeng)
+            cur.fushu += 2;
+        if (d.substr(0, 2) != zifeng && d.substr(0, 2) == changfeng)
+            cur.fushu += 2;
+        if (d.substr(0, 2) == "5z" || d.substr(0, 2) == "6z" || d.substr(0, 2) == "7z")
+            cur.fushu += 2;
+    }
+    if (cur.daixuan.size() == 1) 
+        cur.fushu += 2;
+    if (!ph && zimo)
+        cur.fushu += 2;
+    if (!fulu && !zimo)
+        cur.fushu += 10;
+    if (fulu && cur.fushu < 30)
+        cur.fushu = 30;
+    cur.fushu = (cur.fushu + 9) / 10 * 10;
 }

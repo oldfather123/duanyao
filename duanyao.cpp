@@ -184,11 +184,13 @@ int main() {
         }
     }
     count_fanshu(tile);
+    count_fushu(tile);
     if (!tile.yizhong.empty()) {
         cout << "  役种: " << endl;
         for (const auto &d : tile.yizhong) {
             cout << "\t" << d.first << " " << d.second << "番" << endl;      
         }
+        cout << tile.fanshu << "番 " << tile.fushu << "符" << endl;
     }
     if (tile.yizhong.empty()) {
         cout << "  役种: 无" << endl;

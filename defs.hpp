@@ -31,8 +31,8 @@ struct Tiles {
     vector<string> danpai;
     vector<string> daixuan;
     vector<pair<string, int>> yizhong;
-    int fushu = 0;
-    int fanshu = 20;
+    int fushu = 20;
+    int fanshu = 0;
     int dianshu = 0;
 };
 
@@ -81,3 +81,4 @@ bool hunyise(const Tiles &tile);
 bool qingyise(const Tiles &tile);
 
 void count_fanshu(Tiles &cur);
+void count_fushu(Tiles &cur);
