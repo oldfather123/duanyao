@@ -6,6 +6,25 @@
 #include<functional>
 #include"defs.hpp"
 
+string getdora(const string &dora) {
+    char next;
+    if (dora[1] == 'z') {
+        if (dora[0] == '4')
+            next = '1';
+        else if (dora[0] == '7')
+            next = '5';
+        else
+            next = dora[0] + 1;
+    }
+    else {
+        if (dora[0] == '9')
+            next = '1';
+        else
+            next = dora[0] + 1;
+    }
+    return string{next, dora[1]};
+}
+
 void count_fanshu(Tiles &cur){
     if (wlizhi) {
         lizhi = true;
@@ -169,5 +188,17 @@ void count_fanshu(Tiles &cur){
     if (hedi) {
         cur.yizhong.push_back({"河底摸鱼", 1});
         cur.fanshu += 1;
+    }
+    if (doracnt != 0) {
+        cur.yizhong.push_back({"宝牌", doracnt});
+        cur.fanshu += doracnt;
+    }
+    if (cdoracnt != 0) {
+        cur.yizhong.push_back({"赤宝牌", cdoracnt});
+        cur.fanshu += cdoracnt;
+    }
+    if (wlizhi || lizhi) {
+        cur.yizhong.push_back({"里宝牌", ldoracnt});
+        cur.fanshu += ldoracnt;
     }
 }

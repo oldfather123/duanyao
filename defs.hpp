@@ -17,6 +17,11 @@ extern bool lingshang;
 extern bool haidi;
 extern bool hedi;
 
+extern int doracnt;
+extern int ldoracnt;
+extern int bdoracnt;
+extern int cdoracnt;
+
 struct Tiles {
     vector<string> kezi;
     vector<string> shunzi;
@@ -47,6 +52,7 @@ string next2(const string &tile);
 string prev1(const string &tile);
 vector<Tiles> split_tiles(const vector<string>& tiles);
 
+string getdora(const string &dora);
 bool is_yaojiu(const string &t);
 bool duanyaojiu(const Tiles& tile);
 bool pinghu(const Tiles& tile);
