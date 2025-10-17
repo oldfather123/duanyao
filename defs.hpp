@@ -42,7 +42,25 @@ struct FTiles {
     vector<string> gangzi;
 };
 
+struct ZhuangDian {
+    int total;
+    int dian;
+    ZhuangDian() : total(0), dian(0) {}
+    ZhuangDian(int t, int d) : total(t), dian(d) {}
+};
+
+struct ZiDian {
+    int total;
+    int zidian;
+    int zhuangdian;
+    ZiDian() : total(0), zidian(0), zhuangdian(0) {}
+    ZiDian(int t, int zi, int zh) : total(t), zidian(zi), zhuangdian(zh) {}
+};
+
 extern FTiles ftile;
+
+extern unordered_map<int, unordered_map<int, ZhuangDian>> zhuangjia;
+extern unordered_map<int, unordered_map<int, ZiDian>> zijia;
 
 vector<string> parse_tiles(const string& input);
 bool cmptile(const string& a, const string& b);
@@ -82,3 +100,6 @@ bool qingyise(const Tiles &tile);
 
 void count_fanshu(Tiles &cur);
 void count_fushu(Tiles &cur);
+
+void initzhuangjia();
+void initzijia();

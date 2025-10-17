@@ -30,6 +30,8 @@ int cdoracnt;
 FTiles ftile;
 
 int main() {
+    initzhuangjia();
+    initzijia();
     string input;
     cout << "输入手牌" << endl;
     cin >> input;
@@ -191,6 +193,25 @@ int main() {
             cout << "\t" << d.first << " " << d.second << "番" << endl;      
         }
         cout << tile.fanshu << "番 " << tile.fushu << "符" << endl;
+        if (tile.fanshu == 3 && tile.fushu >= 70)
+            cout << "满贯 ";
+        if (tile.fanshu == 4 && tile.fushu >= 40)
+            cout << "满贯 ";
+        if (tile.fanshu == 5)
+            cout << "满贯 ";
+        if (tile.fanshu >= 6 && tile.fanshu <= 7)
+            cout << "跳满 ";
+        if (tile.fanshu >= 8 && tile.fanshu <= 10)
+            cout << "倍满 ";    
+        if (tile.fanshu >= 11 && tile.fanshu <= 12)
+            cout << "三倍满 ";
+        if (tile.fanshu >= 13)
+            cout << "累计役满 ";
+        int f = tile.fanshu > 13 ? 13 : tile.fanshu;
+        if (zifeng == "1z")
+            cout << zhuangjia[f][tile.fushu].total << "点" << endl;
+        else
+            cout << zijia[f][tile.fushu].total << "点" << endl;
     }
     if (tile.yizhong.empty()) {
         cout << "  役种: 无" << endl;

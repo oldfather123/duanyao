@@ -228,12 +228,16 @@ bool tongse(vector<string> vec) {
 }
 
 bool onetonine(vector<string> vec) {
-    int cnt = 0;
+    bool b1 = false, b4 = false, b7 = false;
     for (const auto &v : vec) {
-        if (v == "123" || v == "456" || v == "789")
-            cnt++;
+        if (v == "123")
+            b1 = true;
+        if (v == "456")
+            b4 = true;
+        if (v == "789")
+            b7 = true;
     }
-    if (cnt >= 3)
+    if (b1 && b4 && b7)
         return true;
     return false;
 }
