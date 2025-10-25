@@ -46,15 +46,17 @@ int main() {
     cout << "输入自风" << endl;
     cin >> zifeng;
     cout << "输入宝牌指示牌" << endl;
-    string dora;
-    cin >> dora;
-    string d = getdora(dora);
-    for (int i = 0; i < input.length(); i += 2) {
-        if (input.substr(i, 2) == d) 
+    string doras;
+    cin >> doras;
+    vector<string> ds = getdoras(doras);
+    for (const auto &d : ds) {
+        for (int i = 0; i < input.length(); i += 2) {
+            if (input.substr(i, 2) == d) 
+                doracnt++;
+        }
+        if (hupai == d) 
             doracnt++;
     }
-    if (hupai == d) 
-        doracnt++;
     cout << "输入赤宝个数" << endl;
     cin >> cdoracnt;
     cout << "两立直|立直|一发|自摸|副露|枪杠|岭上|海底|河底" << endl;
@@ -75,15 +77,17 @@ int main() {
     }
     if (wlizhi || lizhi) {
         cout << "输入里宝指示牌" << endl;
-        string ldora;
-        cin >> ldora;
-        string ld = getdora(ldora);
+        string ldoras;
+        cin >> ldoras;
+        vector<string> lds = getdoras(ldoras);
+        for (const auto &ld : lds) {
         for (int i = 0; i < input.length(); i += 2) {
             if (input.substr(i, 2) == ld) 
                 ldoracnt++;
-        }   
+        }
         if (hupai == ld) 
             ldoracnt++;
+    }
     }
     vector<string> tiles = parse_tiles(input);
     tiles = sort_tiles(tiles);

@@ -28,6 +28,14 @@ string getdora(const string &dora) {
     return string{next, dora[1]};
 }
 
+vector<string> getdoras(const string &doras) {
+    vector<string> res;
+    for (int i = 0; i < doras.length(); i += 2) {
+        res.push_back(getdora(doras.substr(i, 2)));
+    }
+    return res;
+}
+
 void count_fanshu(Tiles &cur) {
     if (wlizhi) {
         lizhi = true;

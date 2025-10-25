@@ -71,6 +71,7 @@ string prev1(const string &tile);
 vector<Tiles> split_tiles(const vector<string>& tiles);
 
 string getdora(const string &dora);
+vector<string> getdoras(const string &doras);
 bool is_yaojiu(const string &t);
 bool duanyaojiu(const Tiles& tile);
 bool pinghu(const Tiles& tile);
