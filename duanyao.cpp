@@ -106,8 +106,8 @@ int main() {
             else if (i == 4) fulu = true;
             else if (i == 5) qianggang = true;
             else if (i == 6) lingshang = true;
-            else if (i == 7) haidi = true;
-            else if (i == 8) hedi = true;
+            else if (i == 7) hedi = true;
+            else if (i == 8) haidi = true;
         }
     }
     if (wlizhi || lizhi) {
@@ -178,7 +178,7 @@ int main() {
     // }
     int choice = 1;
     if (results.size() > 1) {
-        // cout << "选择牌型" << endl;
+        cout << "选择牌型" << endl;
         cin >> choice;
     }
     Tiles tile = results[choice - 1];
