@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>荣！断幺！</title>
+</head>
+
+<body>
+    <h1 style="text-align:center;margin-top:12px">荣！断幺！点数计算器</h1>
+
+    <form id="cfg" style="display:grid;grid-template-columns:120px 1fr;gap:6px 12px">
+        <label for="hand">手牌</label>
+        <input id="hand" name="hand" type="text">
+
+        <label for="hupai">和牌</label>
+        <input id="hupai" name="hupai" type="text">
+
+        <label for="dora">宝牌</label>
+        <input id="dora" name="dora" type="text">
+
+        <label>场风</label>
+        <div id="changfeng" style="display:flex;gap:8px;align-items:center">
+            <label><input type="radio" name="changfeng" value="东"> 东</label>
+            <label><input type="radio" name="changfeng" value="南"> 南</label>
+            <label><input type="radio" name="changfeng" value="西"> 西</label>
+        </div>
+
+        <label>自风</label>
+        <div id="zifeng" style="display:flex;gap:8px;align-items:center">
+            <label><input type="radio" name="zifeng" value="东"> 东</label>
+            <label><input type="radio" name="zifeng" value="南"> 南</label>
+            <label><input type="radio" name="zifeng" value="西"> 西</label>
+            <label><input type="radio" name="zifeng" value="北"> 北</label>
+        </div>
+
+        <div style="white-space: nowrap; grid-column: 1 / -1">
+            <label><input type="checkbox" name="wlizhi" value="0">两立直</label>
+            <label><input type="checkbox" name="lizhi" value="0">立直</label>
+            <label><input type="checkbox" name="yifa" value="0">一发</label>
+            <label><input type="checkbox" name="zimo" value="0">自摸</label>
+            <label><input type="checkbox" name="fulu" value="0">副露</label>
+            <label><input type="checkbox" name="qianggang" value="0">枪杠</label>
+            <label><input type="checkbox" name="lingshang" value="0">岭上开花</label>
+            <label><input type="checkbox" name="hedi" value="0">河底捞鱼</label>
+            <label><input type="checkbox" name="haidi" value="0">海底摸月</label>
+        </div>
+
+        <div id="ldora-container" style="display:none; grid-column: 1 / -1;grid-template-columns:120px 1fr;gap:6px 12px">
+            <label for="ldora">里宝牌</label>
+            <input id="ldora" name="ldora" type="text">
+        </div>
+
+        <div></div>
+        <div style="display:flex;gap:8px">
+            <button id="run" type="button">运行</button>
+            <button type="reset">重置</button>
+        </div>
+
+        <label>输出</label>
+        <pre id="out" style="background:#f7f7f7;padding:8px;border:1px solid #ddd"></pre>
+        <script src="read.js"></script>
+
+        <script>
+            // 控制里宝牌输入框的显示逻辑
+            document.addEventListener('DOMContentLoaded', () => {
+                const ldoraContainer = document.getElementById('ldora-container');
+                const wlizhiCheckbox = document.querySelector('input[name="wlizhi"]');
+                const lizhiCheckbox = document.querySelector('input[name="lizhi"]');
+
+                function updateLdoraVisibility() {
+                    if (wlizhiCheckbox.checked || lizhiCheckbox.checked) {
+                        ldoraContainer.style.display = 'grid'; // 显示
+                    } else {
+                        ldoraContainer.style.display = 'none'; // 隐藏
+                    }
+                }
+
+                // 监听两立直和立直复选框的变化
+                wlizhiCheckbox.addEventListener('change', updateLdoraVisibility);
+                lizhiCheckbox.addEventListener('change', updateLdoraVisibility);
+
+                // 初始化显示状态
+                updateLdoraVisibility();
+            });
+        </script>
+    </form>
+
+</body>
+
+</html>
