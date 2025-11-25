@@ -36,7 +36,7 @@ app.post('/api/run', (req, res) => {
   const inputLines = [
     safe.hand, safe.hupai, safe.changfeng, safe.zifeng, safe.dora, safe.flags || '', safe.ldora
   ];
-  inputLines.push('1');
+  inputLines.push(1);
 
   let proc;
   try {
