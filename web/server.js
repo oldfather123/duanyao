@@ -1,4 +1,3 @@
-// ...existing code...
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
@@ -9,22 +8,134 @@ const fs = require('fs');
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
+app.use(express.static(__dirname));
 
 const DUANYAO_EXEC = path.resolve(__dirname, '..', 'duanyao');
-const MAX_FIELD_LEN = 2000;
+const LOGIN_EXEC = path.resolve(__dirname, '..', 'login');
 const MAX_OUTPUT_BYTES = 1024 * 1024;
 const PROCESS_TIMEOUT_MS = 20000;
 
-function clamp(s){ s = (s===undefined||s===null)?'':String(s); return s.length>MAX_FIELD_LEN? s.slice(0,MAX_FIELD_LEN) : s; }
-function ensureExecutableExists(res){
-  if (!fs.existsSync(DUANYAO_EXEC)){
+// Helper function to ensure the executable exists
+function ensureExecutableExists(res) {
+  if (!fs.existsSync(DUANYAO_EXEC)) {
     const msg = `duanyao executable not found: ${DUANYAO_EXEC}\n请在 /home/oldfather/duanyao 运行 make 生成可执行文件后重试。`;
-    if (res) res.status(500).json({ success:false, error: msg });
+    if (res) res.status(500).json({ success: false, error: msg });
     return false;
   }
   return true;
 }
 
+function runExec(execPath, input, res) {
+  if (!fs.existsSync(execPath)) {
+    return res.status(500).json({ success: false, error: 'executable not found: ' + execPath });
+  }
+  let proc;
+  try {
+    proc = spawn(execPath, [], { cwd: path.dirname(execPath) });
+  } catch (err) {
+    return res.status(500).json({ success: false, error: 'spawn failed: ' + String(err) });
+  }
+
+  let stdout = '', stderr = '';
+  let killedByServer = false;
+
+  proc.stdout.on('data', chunk => {
+    stdout += chunk.toString();
+    if (stdout.length > MAX_OUTPUT_BYTES) {
+      killedByServer = true;
+      proc.kill('SIGKILL');
+      stderr += '\n[server] stdout exceeded max size and was killed';
+    }
+  });
+
+  proc.stderr.on('data', chunk => {
+    stderr += chunk.toString();
+    if (stderr.length > MAX_OUTPUT_BYTES) {
+      killedByServer = true;
+      proc.kill('SIGKILL');
+      stderr += '\n[server] stderr exceeded max size and was killed';
+    }
+  });
+
+  const timeout = setTimeout(() => {
+    if (!proc.killed) {
+      killedByServer = true;
+      proc.kill('SIGKILL');
+      stderr += '\n[server] process timeout and was killed';
+    }
+  }, PROCESS_TIMEOUT_MS);
+
+  proc.on('close', (code, signal) => {
+    clearTimeout(timeout);
+    if (killedByServer) {
+      if (!res.headersSent) res.status(500).json({ success: false, error: stderr, stdout });
+      return;
+    }
+
+    const s = (stdout || '').trim();
+    let parsed = null;
+    if (s) {
+      try {
+        parsed = JSON.parse(s);
+      } catch (e) {
+        const m = s.match(/\{[\s\S]*?\}/);
+        if (m) {
+          try { parsed = JSON.parse(m[0]); } catch (e2) { parsed = null; }
+        }
+      }
+    }
+
+    if (parsed) {
+      res.json(parsed);
+    } else {
+      res.status(500).json({ success: false, error: 'failed to parse JSON from exec stdout', stdout, stderr, exitCode: code, signal });
+    }
+  });
+
+  try {
+    proc.stdin.write(input + '\n');
+    proc.stdin.end();
+  } catch (e) {
+    if (!res.headersSent) res.status(500).json({ success: false, error: String(e) });
+  }
+}
+
+function clamp(v) {
+  if (v === undefined || v === null) return '';
+  if (typeof v === 'string') return v;
+  try { return String(v); } catch (e) { return ''; }
+}
+
+function savePayload(prefix, payload) {
+  try {
+    const dir = path.resolve(__dirname, 'payloads');
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    const fname = path.join(dir, `${prefix}_${Date.now()}.json`);
+    fs.writeFile(fname, payload, 'utf8', (err) => {
+      if (err) console.error('[server] savePayload error:', err);
+    });
+  } catch (e) {
+    console.error('[server] savePayload exception:', e);
+  }
+}
+
+// API for login and register
+app.post('/api/auth', (req, res) => {
+  if (!ensureExecutableExists(res)) return;
+
+  const action = req.body.action;
+  const username = req.body.username;
+  const password = req.body.password;
+
+  if (!action || !username || !password) {
+    return res.status(400).json({ success: false, error: 'Missing fields' });
+  }
+
+  const payload = JSON.stringify({ action, username, password });
+  runExec(LOGIN_EXEC, payload, res);
+});
+
+// API for main page (run calculations)
 app.post('/api/run', (req, res) => {
   if (!ensureExecutableExists(res)) return;
 
@@ -89,7 +200,7 @@ app.post('/api/run', (req, res) => {
         // 直接整体解析优先
         parsed = JSON.parse(s);
       } catch (e) {
-        const m = s.match(/\{[\s\S]*\}/);
+        const m = s.match(/\{[\s\S]*?\}/);
         if (m) {
           try { parsed = JSON.parse(m[0]); } catch (e2) { parsed = null; }
         }
@@ -103,7 +214,7 @@ app.post('/api/run', (req, res) => {
       if (Array.isArray(parsed.yizhong) && parsed.yizhong.length > 0) {
         for (const item of parsed.yizhong) {
           const name = item.name || '';
-          const fans = (typeof item.fans === 'number') ? item.fans : item.fans || '';
+          const fans = (typeof item.fans === 'number') ? item.fans : (item.fans || '');
           formatted += `\t${name} ${fans}番\n`;
         }
       } else {
@@ -138,7 +249,6 @@ app.post('/api/run', (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server is running on http://127.0.0.1:${PORT}`);
 });
-// ...existing code...

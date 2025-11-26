@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <title>荣！断幺！ - 点数计算器</title>
+  <style>
+    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; padding:20px; background:#fafafa; }
+    .card { background:#fff; border:1px solid #e6e6e6; padding:18px; border-radius:6px; max-width:900px; margin:12px auto; box-shadow:0 2px 6px rgba(0,0,0,.03); }
+    h1 { text-align:center; margin:8px 0 18px; }
+    label { display:block; margin:8px 0 4px; font-size:14px; color:#333; }
+    input[type="text"] { width:100%; padding:8px; border:1px solid #ddd; border-radius:4px; box-sizing:border-box; }
+    button { padding:8px 12px; border-radius:4px; border:1px solid #bbb; background:#f5f5f5; cursor:pointer; }
+    .radio-row { display:flex; gap:8px; align-items:center; }
+    .radio-row label { display:inline-flex; align-items:center; gap:6px; margin:0; font-size:14px; }
+    .flags-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .flags-row label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin: 0;
+      font-size: 14px;
+    }
+    #out { background:#f7f7f7; padding:8px; border:1px solid #ddd; min-height:140px; white-space:pre-wrap; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div style="display:flex;align-items:center;">
+      <h1 style="flex:1;margin:0">荣！断幺！点数计算器</h1>
+      <div>
+        <span id="who" class="small"></span>
+        <button id="logoutBtn">退出</button>
+      </div>
+    </div>
+
+    <form id="cfg" style="display:grid;grid-template-columns:120px 1fr;gap:6px 12px;margin-top:12px">
+        <label for="hand">手牌</label>
+        <input id="hand" name="hand" type="text">
+
+        <label for="hupai">和牌</label>
+        <input id="hupai" name="hupai" type="text">
+
+        <label for="dora">宝牌</label>
+        <input id="dora" name="dora" type="text">
+
+        <label>场风</label>
+        <div id="changfeng" class="radio-row">
+            <label><input type="radio" name="changfeng" value="东"> 东</label>
+            <label><input type="radio" name="changfeng" value="南"> 南</label>
+            <label><input type="radio" name="changfeng" value="西"> 西</label>
+        </div>
+
+        <label>自风</label>
+        <div id="zifeng" class="radio-row">
+            <label><input type="radio" name="zifeng" value="东"> 东</label>
+            <label><input type="radio" name="zifeng" value="南"> 南</label>
+            <label><input type="radio" name="zifeng" value="西"> 西</label>
+            <label><input type="radio" name="zifeng" value="北"> 北</label>
+        </div>
+
+        <div class="flags-row" style="grid-column: 1 / -1">
+            <label><input type="checkbox" name="wlizhi" value="0">两立直</label>
+            <label><input type="checkbox" name="lizhi" value="0">立直</label>
+            <label><input type="checkbox" name="yifa" value="0">一发</label>
+            <label><input type="checkbox" name="zimo" value="0">自摸</label>
+            <label><input type="checkbox" name="fulu" value="0">副露</label>
+            <label><input type="checkbox" name="qianggang" value="0">枪杠</label>
+            <label><input type="checkbox" name="lingshang" value="0">岭上开花</label>
+            <label><input type="checkbox" name="hedi" value="0">河底摸鱼</label>
+            <label><input type="checkbox" name="haidi" value="0">海底捞月</label>
+        </div>
+
+        <div id="ldora-container" style="display:none; grid-column: 1 / -1;grid-template-columns:120px 1fr;gap:6px 12px">
+            <label for="ldora">里宝牌</label>
+            <input id="ldora" name="ldora" type="text">
+        </div>
+
+        <div></div>
+        <div style="display:flex;gap:8px">
+            <button id="run" type="button">运行</button>
+            <button type="reset">重置</button>
+        </div>
+
+        <label>输出</label>
+        <pre id="out"></pre>
+    </form>
+  </div>
+
+  <script>
+    const BACKEND = 'http://127.0.0.1:3000';
+
+    // 运行按钮逻辑
+    document.getElementById('run').addEventListener('click', async () => {
+      const hand = document.getElementById('hand').value.trim();
+      const hupai = document.getElementById('hupai').value.trim();
+      const dora = document.getElementById('dora').value.trim();
+      const changfeng = document.querySelector('input[name="changfeng"]:checked')?.value || '';
+      const zifeng = document.querySelector('input[name="zifeng"]:checked')?.value || '';
+      const flags = Array.from(document.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.name).join(',');
+
+      const output = document.getElementById('out');
+      output.textContent = '计算中...';
+
+      try {
+        const resp = await fetch(BACKEND + '/api/run', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ hand, hupai, dora, changfeng, zifeng, flags })
+        });
+        const result = await resp.json();
+        if (result.success) {
+          output.textContent = result.formatted || '计算成功，但无输出';
+        } else {
+          output.textContent = '错误: ' + (result.error || '未知错误');
+        }
+      } catch (e) {
+        output.textContent = '网络或服务器错误';
+      }
+    });
+
+    // 退出按钮逻辑
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      window.location.href = 'login.html'; // 退出跳转回登录页面
+    });
+
+    // 控制里宝牌显示
+    const ldoraContainer = document.getElementById('ldora-container');
+    const wlizhiCheckbox = document.querySelector('input[name="wlizhi"]');
+    const lizhiCheckbox = document.querySelector('input[name="lizhi"]');
+    function updateLdoraVisibility() {
+      if (wlizhiCheckbox && lizhiCheckbox && (wlizhiCheckbox.checked || lizhiCheckbox.checked)) {
+        ldoraContainer.style.display = 'grid';
+      } else if (ldoraContainer) {
+        ldoraContainer.style.display = 'none';
+      }
+    }
+    if (wlizhiCheckbox) wlizhiCheckbox.addEventListener('change', updateLdoraVisibility);
+    if (lizhiCheckbox) lizhiCheckbox.addEventListener('change', updateLdoraVisibility);
+    updateLdoraVisibility();
+  </script>
+
+  <script src="read.js"></script>
+</body>
+</html>

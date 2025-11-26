@@ -62,7 +62,7 @@ int main() {
     // cout << "输入手牌" << endl;
     cin >> hand;
     if (hand.length() < 26) {
-        cout << "Error: tiles length fail, current length " << hand.length() / 2 << endl;
+        cerr << "Error: tiles length fail, current length " << hand.length() / 2 << endl;
         return 0;
     }
     // cout << "输入和牌" << endl;
@@ -178,7 +178,7 @@ int main() {
     // }
     int choice = 1;
     if (results.size() > 1) {
-        cout << "选择牌型" << endl;
+        // cout << "选择牌型" << endl;
         cin >> choice;
     }
     Tiles tile = results[choice - 1];

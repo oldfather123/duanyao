@@ -20,7 +20,7 @@ async function postOnce(payload, timeout = 20000){
   const controller = new AbortController();
   const id = setTimeout(()=>controller.abort(), timeout);
   try {
-    const resp = await fetch('http://localhost:3000/api/run', {
+    const resp = await fetch('http://127.0.0.1:3000/api/run', {
       method: 'POST',
       headers: {'Content-Type':'application/json'},
       body: JSON.stringify(payload),
@@ -29,7 +29,7 @@ async function postOnce(payload, timeout = 20000){
     clearTimeout(id);
     if (!resp.ok) {
       const t = await resp.text();
-      throw new Error('server response not ok: ' + t);
+      throw new Error(`HTTP ${resp.status}: ${t}`);
     }
     return await resp.json();
   } catch (err) {
@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
         else outEl.textContent = '后端返回空响应';
       }
     } catch (err) {
-      if (outEl) outEl.textContent += '\n网络或服务器错误: ' + (err.message || String(err));
+      if (outEl) outEl.textContent += '\nread网络或服务器错误: ' + (err.message || String(err));
     }
   });
 });
